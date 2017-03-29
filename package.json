@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/infloop/test-n-gram/issues"
   },
-  "homepage": "https://github.com/infloop/test-n-gram#readme"
+  "homepage": "https://github.com/infloop/test-n-gram#readme",
+  "dependencies": {
+    "n-gram": "^1.0.0"
+  }
 }
