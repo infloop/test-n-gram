@@ -19,6 +19,5 @@ let vocabulary = [
 
 let word = 'ABANDANIN';
 
-
 console.log(nGram.bigram(vocabulary[5]));
 console.log(nGram.bigram(word));

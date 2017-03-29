@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/infloop/test-n-gram#readme",
   "dependencies": {
+    "bloomfilter": "0.0.16",
+    "lodash": "^4.17.4",
     "n-gram": "^1.0.0"
   }
 }
