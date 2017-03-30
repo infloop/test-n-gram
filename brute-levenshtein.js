@@ -102,30 +102,38 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
 
         console.timeEnd(' - Getting input');
 
-
         console.time(' - Calculating levenshtein distances index');
-
-        let distanceIndex = {};
+        let distanceIndex = [];
+        let words = splitSentence(data);
 
         vocabularyWords.forEach((vocabularyWord, i) => {
-            let words = splitSentence(data);
 
             console.time(' - Finding similar words for input');
-            words.forEach((word) => {
+            words.forEach((word, j) => {
                 word = word.trim().toUpperCase();
 
-
-                distanceIndex[word] = distanceIndex[word] || {};
+                distanceIndex[j] = distanceIndex[j] || [];
 
                 let distance = levenshtein(word, vocabularyWord);
 
                 if (i === 0) {
-                    distanceIndex[word][vocabularyWord] = distance;
-                } else if (distance < distanceIndex[word][vocabularyWord]) {
-                    distanceIndex[word][vocabularyWord] = distance;
-                } else if (distance > distanceIndex[word][vocabularyWord]) {
+                    distanceIndex[j][i] = distance;
+                } else if (distance < distanceIndex[j][i]) {
+                    distanceIndex[j][i] = distance;
+                } else if (distance > distanceIndex[j][i]) {
                     // nothing
                 }
+
+                let sortable = [];
+                for (let wIndex in distanceIndex[j]) {
+                    sortable.push([wIndex, distanceIndex[j][wIndex]]);
+                }
+
+                sortable = sortable.sort(function(a, b) {
+                    if (a[1] > b[1]) return -1;
+                    if (a[1] < b[1]) return 1;
+                    return 0;
+                });
 
             });
         });
