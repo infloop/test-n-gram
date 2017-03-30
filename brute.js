@@ -1,10 +1,6 @@
 const fs = require('fs');
-const _ = require('lodash');
 const nGram = require('n-gram');
-const bloom = new (require('bloomfilter').BloomFilter)(
-    32 * 256, // number of bits to allocate.
-    16        // number of hash functions.
-);
+const levenshtein = require('./levenshtein');
 const splitSentence = require('./sentence');
 
 function uniq(array) {
@@ -12,8 +8,6 @@ function uniq(array) {
     return array.filter((item) => {
         return seen.hasOwnProperty(item) ? false : (seen[item] = true);
     });
-
-    //return array;
 }
 
 function wrap(word, n) {
@@ -26,6 +20,8 @@ function wrap(word, n) {
         return '___' + word + '___';
     } else if (n > 4) {
         return '____' + word + '____';
+    } else if (n > 5) {
+        return '_____' + word + '_____';
     }
     return word;
 }
@@ -53,7 +49,9 @@ function autoNGram(word) {
     }
 
     vectors.forEach((vector) => {
-        if (vector.length < 4 || vector.indexOf('_') >= 0) { return; }
+        if (vector.length < 4 || vector.indexOf('_') >= 0) {
+            return;
+        }
 
         for (let i = 1; i < vector.length-2; i++) {
             vectors.push(vector.substr(0, i) + '_' + vector.substr(i + 1));
@@ -63,7 +61,7 @@ function autoNGram(word) {
             vectors.push(vector.substr(0, i) + vector.substr(i + 1));
         }
 
-        for (let i = 1; i < vector.length-2; i++) {
+        for (let i = 0; i < vector.length-1; i++) {
             if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
                 vectors.push(vector.substr(0, i) + vector.substr(i + 1));
             }
@@ -77,56 +75,6 @@ function autoNGram(word) {
     //vector.push(word.length-2);
 
     return vectors;
-}
-
-function levDist(s, t) {
-    let d = []; //2d matrix
-
-    // Step 1
-    let n = s.length;
-    let m = t.length;
-
-    if (n == 0) return m;
-    if (m == 0) return n;
-
-    //Create an array of arrays in javascript (a descending loop is quicker)
-    for (let i = n; i >= 0; i--) d[i] = [];
-
-    // Step 2
-    for (let i = n; i >= 0; i--) d[i][0] = i;
-    for (let j = m; j >= 0; j--) d[0][j] = j;
-
-    // Step 3
-    for (let i = 1; i <= n; i++) {
-        let s_i = s.charAt(i - 1);
-
-        // Step 4
-        for (let j = 1; j <= m; j++) {
-
-            //Check the jagged ld total so far
-            if (i == j && d[i][j] > 4) return n;
-
-            let t_j = t.charAt(j - 1);
-            let cost = (s_i == t_j) ? 0 : 1; // Step 5
-
-            //Calculate the minimum
-            let mi = d[i - 1][j] + 1;
-            let b = d[i][j - 1] + 1;
-            let c = d[i - 1][j - 1] + cost;
-
-            if (b < mi) mi = b;
-            if (c < mi) mi = c;
-
-            d[i][j] = mi; // Step 6
-
-            //Damerau transposition
-            if (i > 1 && j > 1 && s_i == t.charAt(j - 2) && s.charAt(i - 2) == t_j) {
-                d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
-            }
-        }
-    }
-    // Step 7
-    return d[n][m];
 }
 
 let ngCount = 2;
@@ -150,34 +98,36 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, data) => {
 
     console.log('number of words in vocabulary:', words.length);
 
-    console.time(' - Building vocabulary index');
     let index = {};
     let wordIndex = {};
     let wordFreqIndex = {};
-    words.forEach((word) => {
+
+    console.time(' - Building freq vocabulary index');
+    words.forEach((word, i) => {
         word = word.trim();
-        // bloom.add(word);
 
-        wordIndex[word] = true;
-
+        if (i%100===0) {console.log(`${i} of ${words.length}`)};
         words.forEach((freqWord) => {
-            if (freqWord.indexOf(word) >=0 ) {
+            if (freqWord.indexOf(word) >= 0) {
                 wordFreqIndex[word] = wordFreqIndex[word] || 0;
                 wordFreqIndex[word]++;
             }
         });
+    });
+    console.timeEnd(' - Building freq vocabulary index');
 
-        // if (word.length < 2) {
-        //     word = '_' + word + '_';
-        // }
+    console.time(' - Building n-gram vocabulary index');
+    words.forEach((word) => {
+        word = word.trim();
 
+        wordIndex[word] = true;
 
         autoNGram(word).forEach((ngram) => {
             index[ngram] = index[ngram] || [];
             index[ngram].push(word);
         });
     });
-    console.timeEnd(' - Building vocabulary index');
+    console.timeEnd(' - Building n-gram vocabulary index');
 
     console.time(' - Getting input');
     let subsctCount = 0;
@@ -241,7 +191,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, data) => {
             let bestWordsLD = [];
 
             sortable.slice(0, 10).forEach(bw => {
-                bestWordsLD.push([bw[0], levDist(word, bw[0])]);
+                bestWordsLD.push([bw[0], levenshtein(word, bw[0])]);
             });
 
             bestWordsLD = bestWordsLD.sort(function(a, b) {
@@ -253,13 +203,13 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, data) => {
             let best = sortable.slice(0, 1)[0][0];
             let best2 = sortable.slice(1, 2)[0][0];
             let best3 = sortable.slice(1, 3)[0][0];
-            let ld = levDist(word, best);
-            let ld2 = levDist(word, best2);
-            let ld3 = levDist(word, best3);
+            let ld = levenshtein(word, best);
+            let ld2 = levenshtein(word, best2);
+            let ld3 = levenshtein(word, best3);
 
             console.log(`word: [${word}] best: [${best}] similar: [${(sortable.slice(0, 10)).map(item => `${item[0]} (${item[1]})`).join(',')}]`);
             console.log('   - ngrams: ', JSON.stringify(nGramsForWord));
-            console.log('   - levDist: ', ld, ' ', ld2, ' ', ld3);
+            console.log('   - levenshtein: ', ld, ' ', ld2, ' ', ld3);
             console.log('   - bestWordsLD: ', JSON.stringify(bestWordsLD));
             // // console.log('   ', JSON.stringify(bestWordsIndex));
             // console.log('   - best: ', JSON.stringify(bestWordsIndex[word.toUpperCase()]));
