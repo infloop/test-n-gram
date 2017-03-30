@@ -93,8 +93,10 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     let vocabularyWords = vocabulary.split(/[\r\n]+/g);
     console.timeEnd(' - Splitting vocabulary');
 
+    let total = 0;
+
     console.time(' - Getting input');
-    fs.readFile('./data/example_input', {encoding: 'utf8'}, (err, data) => {
+    fs.readFile('./data/187', {encoding: 'utf8'}, (err, data) => {
         if (err) {
             console.log('error', err);
             return err;
@@ -103,43 +105,31 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
         console.timeEnd(' - Getting input');
 
         console.time(' - Calculating levenshtein distances index');
-        let distanceIndex = [];
         let words = splitSentence(data).map(word => word.trim().toUpperCase());
 
-        words.forEach((word, j) => {
+        words.forEach((word) => {
 
+            let distanceIndex = [];
+            let minDistance = 100;
+            let vocabWordWithMinDistance = null;
             vocabularyWords.forEach((vocabularyWord, i) => {
-
-                distanceIndex[j] = distanceIndex[j] || [];
 
                 let distance = levenshtein(word, vocabularyWord);
 
-                if (i === 0) {
-                    // distanceIndex[j] = [];
-                    distanceIndex[j][i] = distance;
-                } else if (distance < distanceIndex[j][i]) {
-                    distanceIndex[j][i] = distance;
-                } else if (distance > distanceIndex[j][i]) {
+                if (distance < minDistance) {
+                    vocabWordWithMinDistance = i;
+                    minDistance = distance;
+                } else if (distance > minDistance) {
                     // nothing
                 }
-
-                // let sortable = [];
-                // for (let wIndex in distanceIndex[j]) {
-                //     sortable.push([wIndex, distanceIndex[j][wIndex]]);
-                // }
-
-                distanceIndex[j].sort((a, b) => {
-                    return a-b;
-                });
-                // sortable = sortable.sort(function(a, b) {
-                //     if (a[1] > b[1]) return -1;
-                //     if (a[1] < b[1]) return 1;
-                //     return 0;
-                // });
-
             });
+
+            console.log(`word: [${word}] best: [${vocabularyWords[vocabWordWithMinDistance]}] ${minDistance}`);
+            total += minDistance;
+
         });
 
         console.timeEnd(' - Calculating levenshtein distances index');
+        console.log(`total = ${total}`);
     });
 });
