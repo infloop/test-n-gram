@@ -54,55 +54,11 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                     break;
                 }
 
-                if (word.length == 1 && vocabularyWord.length > 3) {
+                if (word.length <= 2 && (vocabularyWord.length - word.length) > 1) {
                     continue;
                 }
 
-                if (word.length == 2 && vocabularyWord.length > 4) {
-                    continue;
-                }
-
-                if (word.length == 4 && vocabularyWord.length > 7) {
-                    continue;
-                }
-
-                if (word.length == 5 && vocabularyWord.length > 8) {
-                    continue;
-                }
-
-                if (word.length == 6 && vocabularyWord.length > 9) {
-                    continue;
-                }
-
-                if (word.length == 7 && vocabularyWord.length > 10) {
-                    continue;
-                }
-
-                if (word.length == 8 && vocabularyWord.length > 11) {
-                    continue;
-                }
-
-                if (word.length == 9 && vocabularyWord.length > 12) {
-                    continue;
-                }
-
-                if (word.length == 10 && vocabularyWord.length > 13) {
-                    continue;
-                }
-
-                if (word.length == 11 && vocabularyWord.length > 14) {
-                    continue;
-                }
-
-                if (word.length == 12 && vocabularyWord.length > 15) {
-                    continue;
-                }
-
-                if (word.length == 13 && vocabularyWord.length > 16) {
-                    continue;
-                }
-
-                if (word.length == 14 && vocabularyWord.length > 17) {
+                if (word.length >= 4 && (vocabularyWord.length - word.length) > 2) {
                     continue;
                 }
 
