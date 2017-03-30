@@ -115,6 +115,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 let distance = levenshtein(word, vocabularyWord);
 
                 if (i === 0) {
+                    // distanceIndex[j] = [];
                     distanceIndex[j][i] = distance;
                 } else if (distance < distanceIndex[j][i]) {
                     distanceIndex[j][i] = distance;
@@ -122,10 +123,14 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                     // nothing
                 }
 
-                let sortable = [];
-                for (let wIndex in distanceIndex[j]) {
-                    sortable.push([wIndex, distanceIndex[j][wIndex]]);
-                }
+                // let sortable = [];
+                // for (let wIndex in distanceIndex[j]) {
+                //     sortable.push([wIndex, distanceIndex[j][wIndex]]);
+                // }
+
+                distanceIndex.sort((a, b) => {
+                    return a[j][]
+                });
 
                 // sortable = sortable.sort(function(a, b) {
                 //     if (a[1] > b[1]) return -1;
