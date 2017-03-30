@@ -104,25 +104,62 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
 
         console.timeEnd(' - Getting input');
 
-        console.time(' - Calculating levenshtein distances index');
-        let words = splitSentence(data).map(word => word.trim().toUpperCase());
 
+        let words = splitSentence(data).map(word => word.trim().toUpperCase());
+        let wordIndex = {};
+        vocabularyWords.forEach((vocabularyWord, i) => {
+            wordIndex[vocabularyWord] = i+1;
+        });
+
+        console.time(' - Calculating levenshtein distances index');
         words.forEach((word) => {
 
-            let distanceIndex = [];
+            //let distanceIndex = [];
             let minDistance = 100;
             let vocabWordWithMinDistance = null;
-            vocabularyWords.forEach((vocabularyWord, i) => {
+            // vocabularyWords.forEach((vocabularyWord, i) => {
+            //
+            //     distanceIndex[i] = levenshtein(word, vocabularyWord);
+            // });
+
+            if (wordIndex[word]) {
+                return;
+            }
+
+            for (let i = 0; i < vocabularyWords.length-1; i++ ) {
+                let vocabularyWord = vocabularyWords[i];
+
+                if (minDistance === 1) {
+                    break;
+                }
+
+                if (word.length == 1 && vocabularyWord.length > 3) {
+                    continue;
+                }
+
+                if (word.length == 2 && vocabularyWord.length > 4) {
+                    continue;
+                }
+
+                if (word.length == 4 && vocabularyWord.length > 7) {
+                    continue;
+                }
+
+                if (word.length == 5 && vocabularyWord.length > 8) {
+                    continue;
+                }
+
+                if (word.length == 6 && vocabularyWord.length > 9) {
+                    continue;
+                }
 
                 let distance = levenshtein(word, vocabularyWord);
 
                 if (distance < minDistance) {
                     vocabWordWithMinDistance = i;
                     minDistance = distance;
-                } else if (distance > minDistance) {
-                    // nothing
                 }
-            });
+            }
 
             console.log(`word: [${word}] best: [${vocabularyWords[vocabWordWithMinDistance]}] ${minDistance}`);
             total += minDistance;
