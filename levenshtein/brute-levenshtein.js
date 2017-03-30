@@ -47,8 +47,9 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 return;
             }
 
+            let vocabularyWord = '';
             for (let i = 0; i < vocabularyWords.length-1; i++ ) {
-                let vocabularyWord = vocabularyWords[i];
+                vocabularyWord = vocabularyWords[i];
 
                 if (minDistance === 1) {
                     break;
