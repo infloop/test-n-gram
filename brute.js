@@ -34,29 +34,49 @@ function autoNGram(word) {
     "use strict";
     let ngCount = 3;
 
-    let vector = nGram(ngCount)(wrap(word, ngCount));
+    let vectors = nGram(ngCount)(wrap(word, ngCount));
 
-    if (word.length <= 4) {
-        vector = vector.concat(nGram(ngCount-1)(wrap(word, ngCount-1)))
+    if (word.length <= 6) {
+        vectors = vectors.concat(nGram(ngCount-1)(wrap(word, ngCount-1)))
     }
-
-    if (word.length > 6) {
-        vector = vector.concat(nGram(ngCount+1)(wrap(word, ngCount+1)))
+    if (word.length > 7) {
+        vectors = vectors.concat(nGram(ngCount+1)(wrap(word, ngCount+1)))
     }
     if (word.length > 8) {
-        vector = vector.concat(nGram(ngCount+2)(wrap(word, ngCount+2)))
+        //vectors = vectors.concat(nGram(ngCount+2)(wrap(word, ngCount+2)))
     }
-    if (word.length > 10) {
-        vector = vector.concat(nGram(ngCount+3)(wrap(word, ngCount+3)))
+    if (word.length > 9) {
+        //vectors = vectors.concat(nGram(ngCount+3)(wrap(word, ngCount+3)))
+    }
+    if (word.length > 11) {
+        //vectors = vectors.concat(nGram(ngCount+4)(wrap(word, ngCount+4)))
     }
 
-    vector = uniq(vector);
+    // vectors.forEach((vector) => {
+    //     if (vector.length < 4 || vector.indexOf('_') >= 0) { return; }
+    //
+    //     for (let i = 1; i < vector.length-2; i++) {
+    //         vectors.push(vector.substr(0, i) + '_' + vector.substr(i + 1));
+    //     }
+    //
+    //     for (let i = 1; i < vector.length-2; i++) {
+    //         vectors.push(vector.substr(0, i) + vector.substr(i + 1));
+    //     }
+    //
+    //     for (let i = 1; i < vector.length-2; i++) {
+    //         if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
+    //             vectors.push(vector.substr(0, i) + vector.substr(i + 1));
+    //         }
+    //     }
+    // });
+
+    vectors = uniq(vectors);
 
     //vector.push(word.length);
     //vector.push(word.length-1);
     //vector.push(word.length-2);
 
-    return vector;
+    return vectors;
 }
 
 function levDist(s, t) {
@@ -210,19 +230,34 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, data) => {
                 return 0;
             });
 
+            let bestWordsLD = [];
+
+            sortable.slice(0, 10).forEach(bw => {
+                bestWordsLD.push([bw[0], levDist(word, bw[0])]);
+            });
+
+            bestWordsLD = bestWordsLD.sort(function(a, b) {
+                if (a[1] > b[1]) return 1;
+                if (a[1] < b[1]) return -1;
+                return 0;
+            });
+
             let best = sortable.slice(0, 1)[0][0];
             let best2 = sortable.slice(1, 2)[0][0];
+            let best3 = sortable.slice(1, 3)[0][0];
             let ld = levDist(word, best);
             let ld2 = levDist(word, best2);
+            let ld3 = levDist(word, best3);
 
-            console.log(`word: [${word}] best: [${best}] similar: [${(sortable.slice(0, 9)).map(item => `${item[0]} (${item[1]})`).join(',')}]`);
+            console.log(`word: [${word}] best: [${best}] similar: [${(sortable.slice(0, 10)).map(item => `${item[0]} (${item[1]})`).join(',')}]`);
             console.log('   - ngrams: ', JSON.stringify(nGramsForWord));
-            console.log('   - levDist: ', ld, ' ', ld2);
+            console.log('   - levDist: ', ld, ' ', ld2, ' ', ld3);
+            console.log('   - bestWordsLD: ', JSON.stringify(bestWordsLD));
             // // console.log('   ', JSON.stringify(bestWordsIndex));
             // console.log('   - best: ', JSON.stringify(bestWordsIndex[word.toUpperCase()]));
             // console.log('   - top: ', JSON.stringify(sortable.slice(0, 10)));
             // console.log('   ');
-            subsctCount += ld;
+            subsctCount += bestWordsLD[0][1];
         });
         console.timeEnd(' - Finding similar words for input');
 
