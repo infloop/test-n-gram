@@ -1,7 +1,7 @@
 const fs = require('fs');
 const levenshtein = require('./levenshtein');
 const splitSentence = require('./sentence');
-const autoNGram = require('./ngram').autoNGram;
+const autoNGram = require('./ngram').vectorify;
 const threeGram = require('./ngram').threeGram;
 
 console.time(' - Getting vocabulary');

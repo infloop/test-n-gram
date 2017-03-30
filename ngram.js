@@ -9,26 +9,35 @@ let uniq = function (array) {
 
 let wrap = function (word, n) {
     "use strict";
-    if (n > 1 && n <= 2) {
+    if (n === 1) {
+        return  word;
+    } else if (n < 3) {
         return '_' + word + '_';
-    } else if (n <= 3) {
+    } else if (n < 4) {
         return '__' + word + '__';
-    } else if (n > 3) {
+    } else if (n < 5) {
         return '___' + word + '___';
-    } else if (n > 4) {
+    } else if (n < 6) {
         return '____' + word + '____';
-    } else if (n > 5) {
+    } else if (n < 7) {
         return '_____' + word + '_____';
+    } else if (n < 8) {
+        return '______' + word + '______';
+    } else if (n >= 8) {
+        return '_______' + word + '_______';
     }
     return word;
 };
 
-let autoNGram = function(word) {
+let vectorify = function(word) {
     "use strict";
     let ngCount = 3;
 
     let vectors = nGram(ngCount)(wrap(word, ngCount));
 
+    if (word.length <= 2) {
+        vectors = vectors.concat(nGram(1)(wrap(word, 1)))
+    }
     if (word.length <= 6) {
         vectors = vectors.concat(nGram(ngCount-1)(wrap(word, ngCount-1)))
     }
@@ -58,11 +67,11 @@ let autoNGram = function(word) {
             vectors.push(vector.substr(0, i) + vector.substr(i + 1));
         }
 
-        for (let i = 0; i < vector.length-1; i++) {
-            if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
-                vectors.push(vector.substr(0, i) + vector.substr(i + 1));
-            }
-        }
+        // for (let i = 0; i < vector.length-1; i++) {
+        //     if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
+        //         vectors.push(vector.substr(0, i) + vector.substr(i + 1));
+        //     }
+        // }
     });
 
     vectors = uniq(vectors);
@@ -81,6 +90,6 @@ let threeGram = function(word) {
 
 module.exports = {
     wrap,
-    autoNGram,
+    vectorify,
     threeGram
 };

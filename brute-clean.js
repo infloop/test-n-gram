@@ -1,8 +1,7 @@
 const fs = require('fs');
 const levenshtein = require('./levenshtein');
 const splitSentence = require('./sentence');
-const autoNGram = require('./ngram').autoNGram;
-const threeGram = require('./ngram').threeGram;
+const vectorify = require('./ngram').vectorify;
 
 console.time(' - Getting vocabulary');
 fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
@@ -41,8 +40,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
         //     word = '_' + word + '_';
         // }
 
-
-        autoNGram(word).forEach((ngram) => {
+        vectorify(word).forEach((ngram) => {
             index[ngram] = index[ngram] || [];
             index[ngram].push(word);
         });
@@ -52,14 +50,14 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     let total = 0;
 
     console.time(' - Getting input');
-    fs.readFile('./vocabulary/example_input', {encoding: 'utf8'}, (err, data) => {
+    fs.readFile('./data/example_input', {encoding: 'utf8'}, (err, input) => {
         if (err) {
             console.log('error', err);
             return err;
         }
         console.timeEnd(' - Getting input');
 
-        let words = splitSentence(data).map(word => word.trim().toUpperCase());
+        let words = splitSentence(input).map(word => word.trim().toUpperCase());
         // testing
         // vocWords = ['accumsan', 'accumulations'];
 
@@ -75,7 +73,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
             // console.time(' - Building n-gram index for input');
             let bestWordsIndex = {};
 
-            let nGramsForWord = autoNGram(word);
+            let nGramsForWord = vectorify(word);
             nGramsForWord.forEach((ngram) => {
                 if (index[ngram]) {
 
