@@ -153,6 +153,30 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                     continue;
                 }
 
+                if (word.length == 7 && vocabularyWord.length > 10) {
+                    continue;
+                }
+
+                if (word.length == 8 && vocabularyWord.length > 11) {
+                    continue;
+                }
+
+                if (word.length == 9 && vocabularyWord.length > 12) {
+                    continue;
+                }
+
+                if (word.length == 10 && vocabularyWord.length > 13) {
+                    continue;
+                }
+
+                if (word.length == 11 && vocabularyWord.length > 14) {
+                    continue;
+                }
+
+                if (word.length == 12 && vocabularyWord.length > 15) {
+                    continue;
+                }
+
                 let distance = levenshtein(word, vocabularyWord);
 
                 if (distance < minDistance) {
