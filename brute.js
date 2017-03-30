@@ -4,7 +4,6 @@ const splitSentence = require('./sentence');
 const autoNGram = require('./ngram').autoNGram;
 const threeGram = require('./ngram').threeGram;
 
-let ngCount = 2;
 console.time(' - Getting vocabulary');
 fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     "use strict";
@@ -76,30 +75,32 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
             // console.time(' - Building n-gram index for input');
             let bestWordsIndex = [];
 
-            if (word.length > 5) {
-                ngCount = 3;
-            } else if (word.length <= 5) {
-                ngCount = 2;
-            }
-
             let nGramsForWord = autoNGram(word);
             nGramsForWord.forEach((ngram) => {
                 if (nGramIndex[ngram]) {
 
                     nGramIndex[ngram].forEach((wordIndex) => {
-                        if (!bestWordsIndex[wordIndex]) {
-                            bestWordsIndex[wordIndex] = [i, 0, levenshtein(word, vocabularyWords[wordIndex-1])];
-                        } else {
-                            bestWordsIndex[wordIndex][1]++;
+                        if (Math.abs(vocabularyWords[wordIndex-1].length-word.length)<3) {
+                            if (!bestWordsIndex[wordIndex]) {
+                                bestWordsIndex[wordIndex] = [wordIndex, 0, levenshtein(word, vocabularyWords[wordIndex-1])];
+                            } else {
+                                bestWordsIndex[wordIndex][1]++;
+                            }
                         }
                     });
                 }
             });
 
-            let invertedIndex = [];
-            bestWordsIndex.forEach((wordIndex) => {
-                invertedIndex
-            });
+            // let invertedIndex = [];
+            // bestWordsIndex.forEach((info) => {
+            //     let distance = info[2];
+            //     let weight = info[1];
+            //     let index = info[0];
+            //     if (!invertedIndex[distance]) {
+            //         invertedIndex[distance] = index;
+            //     }
+            //
+            // });
 
             // console.timeEnd(' - Building n-gram index for input');
             let sortable = bestWordsIndex.sort(function(a, b) {
@@ -108,13 +109,24 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 return 0;
             });
 
+            // let bestWordIndex = -1;
+            //
+            // let d = 0;
+            // for (d = 0; d < 4; d++) {
+            //     if ((invertedIndex[d])>=0) {
+            //         bestWordIndex = invertedIndex[d];
+            //         break;
+            //     }
+            // }
+
             let bestWordInfo = sortable.slice(0, 1)[0];
-            let best = vocabularyWords[bestWordInfo[0] - 1];
+            let best = vocabularyWords[bestWordInfo[0]-1];
             let distance = bestWordInfo[2];
 
             console.log(`word: [${word}] best: [${best}]`);
             console.log('   - ngrams: ', JSON.stringify(nGramsForWord));
-            console.log('   - similar: ', JSON.stringify(sortable));
+            console.log('   - sortable: ', JSON.stringify(sortable.slice(0, 5).map(info => `${vocabularyWords[info[0]-1]} - ${info[1]} - d: ${info[2]}`)));
+            //console.log('   - invertedIndex: ', JSON.stringify(invertedIndex));
             console.log('   - distance: ', distance);
 
         });
