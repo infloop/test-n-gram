@@ -128,8 +128,8 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 //     sortable.push([wIndex, distanceIndex[j][wIndex]]);
                 // }
 
-                distanceIndex.sort((a, b) => {
-                    return a[j][]
+                distanceIndex[j].sort((a, b) => {
+                    return a-b;
                 });
 
                 // sortable = sortable.sort(function(a, b) {
