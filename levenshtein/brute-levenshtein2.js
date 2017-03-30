@@ -1,6 +1,6 @@
 const fs = require('fs');
 const levenshtein = require('fast-levenshtein');
-const splitSentence = require('./sentence');
+const splitSentence = require('./../sentence');
 
 console.time(' - Getting vocabulary');
 fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
