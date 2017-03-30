@@ -52,23 +52,23 @@ function autoNGram(word) {
         //vectors = vectors.concat(nGram(ngCount+4)(wrap(word, ngCount+4)))
     }
 
-    // vectors.forEach((vector) => {
-    //     if (vector.length < 4 || vector.indexOf('_') >= 0) { return; }
-    //
-    //     for (let i = 1; i < vector.length-2; i++) {
-    //         vectors.push(vector.substr(0, i) + '_' + vector.substr(i + 1));
-    //     }
-    //
-    //     for (let i = 1; i < vector.length-2; i++) {
-    //         vectors.push(vector.substr(0, i) + vector.substr(i + 1));
-    //     }
-    //
-    //     for (let i = 1; i < vector.length-2; i++) {
-    //         if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
-    //             vectors.push(vector.substr(0, i) + vector.substr(i + 1));
-    //         }
-    //     }
-    // });
+    vectors.forEach((vector) => {
+        if (vector.length < 4 || vector.indexOf('_') >= 0) { return; }
+
+        for (let i = 1; i < vector.length-2; i++) {
+            vectors.push(vector.substr(0, i) + '_' + vector.substr(i + 1));
+        }
+
+        for (let i = 1; i < vector.length-2; i++) {
+            vectors.push(vector.substr(0, i) + vector.substr(i + 1));
+        }
+
+        for (let i = 1; i < vector.length-2; i++) {
+            if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
+                vectors.push(vector.substr(0, i) + vector.substr(i + 1));
+            }
+        }
+    });
 
     vectors = uniq(vectors);
 
@@ -150,14 +150,22 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, data) => {
 
     console.log('number of words in vocabulary:', words.length);
 
-    console.time(' - Building vocabulary index with bloom filter');
+    console.time(' - Building vocabulary index');
     let index = {};
     let wordIndex = {};
+    let wordFreqIndex = {};
     words.forEach((word) => {
         word = word.trim();
         // bloom.add(word);
 
         wordIndex[word] = true;
+
+        words.forEach((freqWord) => {
+            if (freqWord.indexOf(word) >=0 ) {
+                wordFreqIndex[word] = wordFreqIndex[word] || 0;
+                wordFreqIndex[word]++;
+            }
+        });
 
         // if (word.length < 2) {
         //     word = '_' + word + '_';
@@ -169,7 +177,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, data) => {
             index[ngram].push(word);
         });
     });
-    console.timeEnd(' - Building vocabulary index with bloom filter');
+    console.timeEnd(' - Building vocabulary index');
 
     console.time(' - Getting input');
     let subsctCount = 0;
