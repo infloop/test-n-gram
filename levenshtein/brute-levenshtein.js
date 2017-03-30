@@ -54,7 +54,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                     break;
                 }
 
-                if (word.length <= 2 && (vocabularyWord.length - word.length) > 1) {
+                if (word.length <= 3 && (vocabularyWord.length - word.length) > 1) {
                     continue;
                 }
 
