@@ -5,7 +5,7 @@ const levenshtein = require('fast-levenshtein');
 
 console.time(' - Total time');
 console.time(' - Getting vocabulary');
-fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
+fs.readFile('../data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     "use strict";
 
     if (err) {
@@ -22,7 +22,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     let total = 0;
 
     console.time(' - Getting input');
-    fs.readFile('./data/187', {encoding: 'utf8'}, (err, data) => {
+    fs.readFile('../data/187', {encoding: 'utf8'}, (err, data) => {
         if (err) {
             console.log('error', err);
             return err;
