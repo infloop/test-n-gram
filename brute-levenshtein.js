@@ -131,7 +131,6 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 distanceIndex[j].sort((a, b) => {
                     return a-b;
                 });
-
                 // sortable = sortable.sort(function(a, b) {
                 //     if (a[1] > b[1]) return -1;
                 //     if (a[1] < b[1]) return 1;
