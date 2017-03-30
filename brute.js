@@ -18,40 +18,43 @@ function uniq(array) {
 
 function wrap(word, n) {
     "use strict";
-    if (n <= 2) {
+    if (n > 1 && n <= 2) {
         return '_' + word + '_';
     } else if (n <= 3) {
         return '__' + word + '__';
     } else if (n > 3) {
         return '___' + word + '___';
+    } else if (n > 4) {
+        return '____' + word + '____';
     }
-    return '__' + word + '__';
+    return word;
 }
 
 function autoNGram(word) {
     "use strict";
-    let ngCount = 2;
+    let ngCount = 3;
+
+    let vector = nGram(ngCount)(wrap(word, ngCount));
 
     if (word.length <= 4) {
-        ngCount = 3;
-    } else if (word.length > 6) {
-        ngCount = 3;
-    } else if (word.length > 8) {
-        ngCount = 4;
-    } else if (word.length > 10) {
-        ngCount = 5;
+        vector = vector.concat(nGram(ngCount-1)(wrap(word, ngCount-1)))
     }
 
-    let vector = uniq(
-        nGram(ngCount)(wrap(word, ngCount))
-            .concat(nGram(ngCount+1)(wrap(word, ngCount)))
-            .concat(nGram(ngCount+2)(wrap(word, ngCount)))
-    );
+    if (word.length > 6) {
+        vector = vector.concat(nGram(ngCount+1)(wrap(word, ngCount+1)))
+    }
+    if (word.length > 8) {
+        vector = vector.concat(nGram(ngCount+2)(wrap(word, ngCount+2)))
+    }
+    if (word.length > 10) {
+        vector = vector.concat(nGram(ngCount+3)(wrap(word, ngCount+3)))
+    }
 
-    vector.push(word.length);
-    vector.push(word.length-1);
+    vector = uniq(vector);
 
-    ve
+    //vector.push(word.length);
+    //vector.push(word.length-1);
+    //vector.push(word.length-2);
 
     return vector;
 }
@@ -208,11 +211,13 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, data) => {
             });
 
             let best = sortable.slice(0, 1)[0][0];
-            let ld = levDist(word, best)
+            let best2 = sortable.slice(1, 2)[0][0];
+            let ld = levDist(word, best);
+            let ld2 = levDist(word, best2);
 
-            console.log(`word: [${word}] best: [${best}] similar: [${(sortable.slice(0, 5)).map(item => `${item[0]} (${item[1]})`).join(',')}]`);
+            console.log(`word: [${word}] best: [${best}] similar: [${(sortable.slice(0, 9)).map(item => `${item[0]} (${item[1]})`).join(',')}]`);
             console.log('   - ngrams: ', JSON.stringify(nGramsForWord));
-            console.log('   - levDist: ', ld);
+            console.log('   - levDist: ', ld, ' ', ld2);
             // // console.log('   ', JSON.stringify(bestWordsIndex));
             // console.log('   - best: ', JSON.stringify(bestWordsIndex[word.toUpperCase()]));
             // console.log('   - top: ', JSON.stringify(sortable.slice(0, 10)));
