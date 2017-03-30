@@ -29,7 +29,7 @@ let wrap = function (word, n) {
     return word;
 };
 
-let vectorify = function(word) {
+let vectorify = function(word, lvl) {
     "use strict";
     let ngCount = 3;
 
@@ -44,35 +44,36 @@ let vectorify = function(word) {
     if (word.length > 7) {
         vectors = vectors.concat(nGram(ngCount+1)(wrap(word, ngCount+1)))
     }
-    if (word.length > 8) {
-        //vectors = vectors.concat(nGram(ngCount+2)(wrap(word, ngCount+2)))
-    }
-    if (word.length > 9) {
-        //vectors = vectors.concat(nGram(ngCount+3)(wrap(word, ngCount+3)))
-    }
-    if (word.length > 11) {
-        //vectors = vectors.concat(nGram(ngCount+4)(wrap(word, ngCount+4)))
+
+    if (word.length > 7 && !lvl) {
+        for (let k = 1; k < word.length - 1; k++) {
+            let rWord = word.substr(0, k) + word.substr(k + 1);
+            vectors = vectors.concat(vectorify(rWord, 1));
+        }
     }
 
-    vectors.forEach((vector) => {
-        if (vector.length < 4 || vector.indexOf('_') >= 0) {
-            return;
-        }
+    // deletions
 
-        for (let i = 1; i < vector.length-2; i++) {
-            vectors.push(vector.substr(0, i) + '_' + vector.substr(i + 1));
-        }
 
-        for (let i = 1; i < vector.length-2; i++) {
-            vectors.push(vector.substr(0, i) + vector.substr(i + 1));
-        }
-
-        // for (let i = 0; i < vector.length-1; i++) {
-        //     if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
-        //         vectors.push(vector.substr(0, i) + vector.substr(i + 1));
-        //     }
-        // }
-    });
+    // vectors.forEach((vector) => {
+    //     if (vector.length < 4 || vector.indexOf('_') >= 0) {
+    //         return;
+    //     }
+    //
+    //     for (let i = 1; i < vector.length-2; i++) {
+    //         vectors.push(vector.substr(0, i) + '_' + vector.substr(i + 1));
+    //     }
+    //
+    //     for (let i = 1; i < vector.length-2; i++) {
+    //         vectors.push(vector.substr(0, i) + vector.substr(i + 1));
+    //     }
+    //
+    //     // for (let i = 0; i < vector.length-1; i++) {
+    //     //     if ('AEUIO'.split('').indexOf(vector.charAt(i)) >=0) {
+    //     //         vectors.push(vector.substr(0, i) + vector.substr(i + 1));
+    //     //     }
+    //     // }
+    // });
 
     vectors = uniq(vectors);
 

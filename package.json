@@ -21,6 +21,7 @@
   "homepage": "https://github.com/infloop/test-n-gram#readme",
   "dependencies": {
     "bloomfilter": "0.0.16",
+    "fast-levenshtein": "^2.0.6",
     "lodash": "^4.17.4",
     "n-gram": "^1.0.0"
   }

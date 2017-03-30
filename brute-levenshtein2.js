@@ -1,5 +1,5 @@
 const fs = require('fs');
-const levenshtein = require('./levenshtein');
+const levenshtein = require('fast-levenshtein');
 const splitSentence = require('./sentence');
 
 console.time(' - Getting vocabulary');
@@ -48,7 +48,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
             }
 
             vocabularyWords.forEach((vocabularyWord, i) => {
-                let distance = levenshtein(word, vocabularyWord);
+                let distance = levenshtein.get(word, vocabularyWord);
 
                 if (i === 0) {
                     distanceIndex[j] = [];

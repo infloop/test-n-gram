@@ -1,8 +1,8 @@
 const fs = require('fs');
 const nGram = require('n-gram');
-const levenshtein = require('./levenshtein');
+//const levenshtein = require('./levenshtein');
 const splitSentence = require('./sentence');
-
+const levenshtein = require('fast-levenshtein');
 function uniq(array) {
     let seen = {};
     return array.filter((item) => {
@@ -177,7 +177,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                     continue;
                 }
 
-                let distance = levenshtein(word, vocabularyWord);
+                let distance = levenshtein.get(word, vocabularyWord);
 
                 if (distance < minDistance) {
                     vocabWordWithMinDistance = i;
@@ -185,7 +185,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 }
             }
 
-            console.log(`word: [${word}] best: [${vocabularyWords[vocabWordWithMinDistance]}] ${minDistance}`);
+            //console.log(`word: [${word}] best: [${vocabularyWords[vocabWordWithMinDistance]}] ${minDistance}`);
             total += minDistance;
 
         });

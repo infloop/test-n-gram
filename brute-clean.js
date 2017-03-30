@@ -118,7 +118,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
 
             console.log(`word: [${word}] best: [${best}]`);
             console.log('   - ngrams: ', JSON.stringify(nGramsForWord));
-            console.log('   - distance: ');
+            // console.log('   - distance: ');
             console.log('   - bestWordsLD: ', JSON.stringify(bestWordsLD));
             // // console.log('   ', JSON.stringify(bestWordsIndex));
             // console.log('   - best: ', JSON.stringify(bestWordsIndex[word.toUpperCase()]));
