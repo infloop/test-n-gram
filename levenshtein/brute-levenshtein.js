@@ -71,7 +71,7 @@ fs.readFile('../data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 }
             }
 
-            //console.log(`word: [${word}] best: [${vocabularyWords[vocabWordWithMinDistance]}] ${minDistance}`);
+            console.log(`word: [${word}] best: [${vocabularyWords[vocabWordWithMinDistance]}] ${minDistance}`);
             total += minDistance;
 
         });
