@@ -3,7 +3,7 @@ const levenshtein = require('fast-levenshtein');
 const splitSentence = require('./../sentence');
 
 console.time(' - Getting vocabulary');
-fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
+fs.readFile('../data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     "use strict";
 
     if (err) {
@@ -18,7 +18,7 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     console.timeEnd(' - Splitting vocabulary');
 
     console.time(' - Getting input');
-    fs.readFile('./data/187', {encoding: 'utf8'}, (err, data) => {
+    fs.readFile('../data/22717', {encoding: 'utf8'}, (err, data) => {
         if (err) {
             console.log('error', err);
             return err;
@@ -82,10 +82,10 @@ fs.readFile('./data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 }
             }
 
-            console.log(`word: [${word}] best: [${vocabularyWords[bestWordIndex]}]`);
-            console.log('   - bestWordIndex: ', bestWordIndex);
-            console.log('   - index: ', JSON.stringify(index));
-            console.log('   - d: ', d);
+            // console.log(`word: [${word}] best: [${vocabularyWords[bestWordIndex]}]`);
+            // console.log('   - bestWordIndex: ', bestWordIndex);
+            // console.log('   - index: ', JSON.stringify(index));
+            // console.log('   - d: ', d);
             // console.log('   - distanceIndex: ', JSON.stringify(distanceIndex));
 
             total += d;

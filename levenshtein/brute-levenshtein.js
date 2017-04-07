@@ -22,7 +22,7 @@ fs.readFile('../data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
     let total = 0;
 
     console.time(' - Getting input');
-    fs.readFile('../data/187', {encoding: 'utf8'}, (err, data) => {
+    fs.readFile('../data/22717', {encoding: 'utf8'}, (err, data) => {
         if (err) {
             console.log('error', err);
             return err;
