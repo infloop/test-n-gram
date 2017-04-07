@@ -44,16 +44,20 @@ fs.readFile('../data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
             let nGramsForWord = threeGram(word);
 
             let nGramWords = [];
+            //let nGramWordsFoundIndex = {};
             nGramsForWord.forEach((ngram) => {
                 if (index.nGramIndex[ngram]) {
-                    index.nGramIndex[ngram].forEach((word) => {
-                        nGramWords.push(word);
+                    index.nGramIndex[ngram].forEach((nGramWord) => {
+                        //if (!nGramWordsFoundIndex[nGramWord]) {
+                            nGramWords.push(nGramWord);
+                            //nGramWordsFoundIndex[nGramWord] = 1;
+                        //}
                     });
                 }
             });
 
             let minDistance = 10;
-            let vocabWordWithMinDistance = null;
+            let vocabWordBest = null;
             let nGramWord = '';
             for (let i = 0; i < nGramWords.length-1; i++ ) {
                 nGramWord = nGramWords[i];
@@ -73,12 +77,13 @@ fs.readFile('../data/vocabulary.txt', {encoding: 'utf8'}, (err, vocabulary) => {
                 let distance = levenshtein.get(word, nGramWord);
 
                 if (distance < minDistance) {
-                    vocabWordWithMinDistance = nGramWord;
+                    vocabWordBest = nGramWord;
                     minDistance = distance;
                 }
             }
 
-            //console.log(`word: [${word}] best: [${vocabularyWords[vocabWordWithMinDistance]}] ${minDistance}`);
+            console.log(`word: [${word}] best: [${vocabWordBest}] ${minDistance}`);
+            //console.log(` - nGramWords.length: ${nGramWords.length}`);
             total += minDistance;
 
         });
