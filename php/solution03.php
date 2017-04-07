@@ -6,7 +6,7 @@ $inputFile = new SplFileObject($argv[1]);
 $inputFile->setFlags(SplFileObject::DROP_NEW_LINE);
 $text = preg_split("/\s+/", $inputFile->fgets());
 
-$inputText = explode(' ', strtoupper());
+$inputText = explode(' ', strtoupper($text));
 $inputFile = null;
 $vocabulary = [];
 $lengths = [];
